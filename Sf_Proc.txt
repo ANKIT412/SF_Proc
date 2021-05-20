@@ -1,0 +1,46 @@
+create or replace table test_table (Warehous_name String, keyColumn String, valueColumn String, defaultColumn String ) 
+comment='Test table for Ankit';
+
+
+create or replace procedure test()
+returns String
+LANGUAGE JAVASCRIPT
+EXECUTE AS CALLER
+AS
+$$
+
+var cmd = "show warehouses"   
+var stmt = snowflake.createStatement(
+{
+sqlText:cmd
+}
+);
+var rs = stmt.execute();
+var response = "";
+while(rs.next()){
+var wName = rs.getColumnValue(1); 
+var sql = "show parameters like 'statement_ti%' in warehouse "+wName+";";
+var stmt = snowflake.createStatement(
+{
+sqlText:sql
+}
+);
+var rs1 = stmt.execute();
+rs1.next();
+response+= wName +" | "+rs1.getColumnValue(1) +" | "+ rs1.getColumnValue(2)+" | "+rs1.getColumnValue(3) +" ; ";
+var responseSql = "INSERT INTO TEST_TABLE values \
+        ( '"+wName+"' , '"+rs1.getColumnValue(1)+"' , '"+ rs1.getColumnValue(2)+"' , '"+rs1.getColumnValue(3)+"');"
+var stmt = snowflake.createStatement(
+{
+sqlText:responseSql
+}
+);
+stmt.execute();
+
+}
+return response;
+$$
+
+call test();
+
+select * from test_table;
