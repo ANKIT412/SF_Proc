@@ -1,0 +1,39 @@
+create or replace procedure test() 
+returns VARIANT NOT NULL
+LANGUAGE JAVASCRIPT
+EXECUTE AS CALLER
+AS
+$$
+var as_json = {};
+var output_array = [];
+var cmd = "show warehouses"; 
+var stmt = snowflake.createStatement(
+{
+sqlText:cmd
+}
+);
+var rs = stmt.execute();
+while(rs.next()){
+  as_json = {};
+  var wName = rs.getColumnValue(1); 
+  var sql = "show parameters like 'statement_ti%' in warehouse "+wName+";";
+  var stmt = snowflake.createStatement(
+  {
+  sqlText:sql
+  }
+  );
+  var rs1 = stmt.execute();
+  rs1.next();
+
+    as_json["Warehouse Name"] = wName;
+    as_json[rs1.getColumnName(1)] = rs1.getColumnValue(1);
+    as_json[rs1.getColumnName(2)] = rs1.getColumnValue(2);
+    as_json[rs1.getColumnName(3)] = rs1.getColumnValue(3);
+
+  output_array.push(as_json);
+}
+
+return output_array;
+$$
+
+call test()
