@@ -1,0 +1,240 @@
+[
+  {
+    "Warehouse": [
+      {
+        "STATEMENT_TIMEOUT_IN_SECONDS": "11000",
+        "Warehouse_name": "ALOK",
+        "auto_resume": "true",
+        "auto_suspend": 600,
+        "comment": "",
+        "max_cluster_count": 1,
+        "min_cluster_count": "X-Small",
+        "scaling_policy": "STANDARD"
+      },
+      {
+        "STATEMENT_TIMEOUT_IN_SECONDS": "172800",
+        "Warehouse_name": "ALOK_412",
+        "auto_resume": "true",
+        "auto_suspend": 600,
+        "comment": "",
+        "max_cluster_count": 1,
+        "min_cluster_count": "X-Small",
+        "scaling_policy": "STANDARD"
+      },
+      {
+        "STATEMENT_TIMEOUT_IN_SECONDS": "172800",
+        "Warehouse_name": "ALOK_4123",
+        "auto_resume": "true",
+        "auto_suspend": 600,
+        "comment": "",
+        "max_cluster_count": 1,
+        "min_cluster_count": "X-Small",
+        "scaling_policy": "STANDARD"
+      },
+      {
+        "STATEMENT_TIMEOUT_IN_SECONDS": "14000",
+        "Warehouse_name": "COMPUTE_WH",
+        "auto_resume": "true",
+        "auto_suspend": 600,
+        "comment": "",
+        "max_cluster_count": 1,
+        "min_cluster_count": "Small",
+        "scaling_policy": "STANDARD"
+      }
+    ]
+  },
+  {
+    "Database": [
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Database_name": "COPY_DEMO_DB",
+        "comment": "demo database",
+        "options": "TRANSIENT"
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Database_name": "DEMO_DB",
+        "comment": "demo database",
+        "options": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Database_name": "SNOWFLAKE",
+        "comment": "",
+        "options": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Database_name": "SNOWFLAKE_SAMPLE_DATA",
+        "comment": "TPC-H, OpenWeatherMap, etc",
+        "options": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Database_name": "TRANS_DB",
+        "comment": "TRANSIENT DB",
+        "options": "TRANSIENT"
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Database_name": "UTIL_DB",
+        "comment": "utility database",
+        "options": ""
+      }
+    ]
+  },
+  {
+    "Schema": [
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "INFORMATION_SCHEMA",
+        "database_name": "COPY_DEMO_DB",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "PUBLIC",
+        "database_name": "COPY_DEMO_DB",
+        "owner": "SYSADMIN"
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "SCHEMA1",
+        "database_name": "COPY_DEMO_DB",
+        "owner": "SYSADMIN"
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "INFORMATION_SCHEMA",
+        "database_name": "DEMO_DB",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "PUBLIC",
+        "database_name": "DEMO_DB",
+        "owner": "SYSADMIN"
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "SCHEMA1",
+        "database_name": "DEMO_DB",
+        "owner": "SYSADMIN"
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "ACCOUNT_USAGE",
+        "database_name": "SNOWFLAKE",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "DATA_SHARING_USAGE",
+        "database_name": "SNOWFLAKE",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "INFORMATION_SCHEMA",
+        "database_name": "SNOWFLAKE",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "ORGANIZATION_USAGE",
+        "database_name": "SNOWFLAKE",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "READER_ACCOUNT_USAGE",
+        "database_name": "SNOWFLAKE",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "INFORMATION_SCHEMA",
+        "database_name": "SNOWFLAKE_SAMPLE_DATA",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "TPCDS_SF100TCL",
+        "database_name": "SNOWFLAKE_SAMPLE_DATA",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "TPCDS_SF10TCL",
+        "database_name": "SNOWFLAKE_SAMPLE_DATA",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "TPCH_SF001",
+        "database_name": "SNOWFLAKE_SAMPLE_DATA",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "TPCH_SF1",
+        "database_name": "SNOWFLAKE_SAMPLE_DATA",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "TPCH_SF10",
+        "database_name": "SNOWFLAKE_SAMPLE_DATA",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "TPCH_SF100",
+        "database_name": "SNOWFLAKE_SAMPLE_DATA",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "TPCH_SF1000",
+        "database_name": "SNOWFLAKE_SAMPLE_DATA",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "TPCH_SF10000",
+        "database_name": "SNOWFLAKE_SAMPLE_DATA",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "WEATHER",
+        "database_name": "SNOWFLAKE_SAMPLE_DATA",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "INFORMATION_SCHEMA",
+        "database_name": "TRANS_DB",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "PUBLIC",
+        "database_name": "TRANS_DB",
+        "owner": "ACCOUNTADMIN"
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "INFORMATION_SCHEMA",
+        "database_name": "UTIL_DB",
+        "owner": ""
+      },
+      {
+        "DATA_RETENTION_TIME_IN_DAY": "1",
+        "Schema_name": "PUBLIC",
+        "database_name": "UTIL_DB",
+        "owner": "SYSADMIN"
+      }
+    ]
+  }
+]
