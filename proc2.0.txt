@@ -1,0 +1,144 @@
+CREATE OR REPLACE PROCEDURE parameterGenerator()
+returns VARIANT NOT NULL
+LANGUAGE JAVASCRIPT
+EXECUTE AS CALLER
+AS
+$$
+var as_json = {};
+var warehouse_as_json = {};
+var database_as_json = {};
+var schema_as_json = {};
+var output_array = [];
+var multi_output_json = {};
+var warehouseSql = "SHOW WAREHOUSES";
+var stmt = snowflake.createStatement({sqlText:warehouseSql});
+var warehouses = stmt.execute();
+
+ 
+
+var warehouse_details_sql = `SELECT "name","size", "min_cluster_count","max_cluster_count","scaling_policy","auto_suspend","auto_resume",
+"comment" AS "desc" from table ( result_scan(last_query_id()));`
+var stmt = snowflake.createStatement({sqlText:warehouse_details_sql});
+var warehouse_details = stmt.execute();
+
+ 
+
+while(warehouse_details.next()){
+    as_json = {};
+    var wName = warehouse_details.getColumnValue(1);
+    var parameterSql = "SHOW PARAMETERS LIKE 'statement_ti%' IN WAREHOUSE "+wName+";";
+    var stmt = snowflake.createStatement({sqlText:parameterSql});
+    var parameterSqlResult = stmt.execute();
+    parameterSqlResult.next();
+          as_json[parameterSqlResult.getColumnValue(1)] = parameterSqlResult.getColumnValue(2);
+          as_json["Warehouse_"+warehouse_details.getColumnName(1)] = warehouse_details.getColumnValue(1);
+          as_json[warehouse_details.getColumnName(2)] = warehouse_details.getColumnValue(2);
+          as_json[warehouse_details.getColumnName(3)] = warehouse_details.getColumnValue(3);
+          as_json[warehouse_details.getColumnName(4)] = warehouse_details.getColumnValue(4);
+          as_json[warehouse_details.getColumnName(5)] = warehouse_details.getColumnValue(5);
+          as_json[warehouse_details.getColumnName(6)] = warehouse_details.getColumnValue(6);
+          as_json[warehouse_details.getColumnName(7)] = warehouse_details.getColumnValue(7);
+          as_json[warehouse_details.getColumnName(8)] = warehouse_details.getColumnValue(8);
+
+ 
+
+          output_array.push(as_json);
+    }
+multi_output_json["warehouse"] = output_array;
+output_array=[];
+var databaseSql = "SHOW DATABASES";
+var stmt = snowflake.createStatement({sqlText:databaseSql});
+stmt.execute();
+
+ 
+
+var databaseSql = `SELECT * FROM TABLE (result_scan(last_query_id())) WHERE "origin" \
+                    NOT in ('SNOWFLAKE.ACCOUNT_USAGE' ,'SFC_SAMPLES.SAMPLE_DATA');`;
+var stmt = snowflake.createStatement({sqlText:databaseSql});
+var databases=stmt.execute();
+
+ 
+
+var d_resultSql = `Select "name","retention_time" as DATA_RETENTION_TIME_IN_DAY,"options","comment", \
+                    CASE \
+                    when "options" like 'T%' THEN 1 \
+                    ELSE 0 \
+                    END as "transient_flag"
+                    from table (result_scan(last_query_id()))
+                    where "origin" NOT in ('SNOWFLAKE.ACCOUNT_USAGE' ,'SFC_SAMPLES.SAMPLE_DATA');`;
+var stmt = snowflake.createStatement({sqlText:d_resultSql});
+var resultScan = stmt.execute();
+
+ 
+
+while(resultScan.next()){
+      as_json = {};
+      as_json["Database_"+resultScan.getColumnName(1)] = resultScan.getColumnValue(1);
+      as_json[resultScan.getColumnName(2)] = resultScan.getColumnValue(2);
+      as_json[resultScan.getColumnName(3)] = resultScan.getColumnValue(3);
+      as_json[resultScan.getColumnName(4)] = resultScan.getColumnValue(4);
+      as_json[resultScan.getColumnName(5)] = resultScan.getColumnValue(5);
+      output_array.push(as_json);
+    }
+multi_output_json["database"] = output_array;
+
+ 
+
+output_array=[];
+while (databases.next()){
+        var db_name = databases.getColumnValue(2);
+        var schemaSql = "SHOW SCHEMAS in "+db_name+";";
+        var stmt = snowflake.createStatement({sqlText:schemaSql});
+        stmt.execute();
+        var schema_resultSql = `Select "name","retention_time" as DATA_RETENTION_TIME_IN_DAY,"database_name","owner" \
+                                   from table (result_scan(last_query_id()));`;
+        var stmt = snowflake.createStatement({sqlText:schema_resultSql});
+        var schemaResultScan = stmt.execute();
+        while(schemaResultScan.next()){
+              as_json = {};
+              as_json["Schema_"+schemaResultScan.getColumnName(1)] = schemaResultScan.getColumnValue(1);
+              as_json[schemaResultScan.getColumnName(2)] = schemaResultScan.getColumnValue(2);
+              as_json[schemaResultScan.getColumnName(3)] = schemaResultScan.getColumnValue(3);
+              as_json[schemaResultScan.getColumnName(4)] = schemaResultScan.getColumnValue(4);
+
+ 
+
+
+              var grant_sql = "SHOW GRANTS ON SCHEMA "+db_name+"."+schemaResultScan.getColumnValue(1)+" ;";
+              var grant_stmt = snowflake.createStatement({sqlText:grant_sql});
+              grant_stmt.execute();
+
+ 
+
+              var grantee_sql = `SELECT distinct("grantee_name") FROM TABLE(result_scan(last_query_id()))`;
+              var grantee_stmt = snowflake.createStatement({sqlText:grantee_sql});
+              var grantees = grantee_stmt.execute();
+              var grantee_name = "";
+              while(grantees.next()){
+               if (grantees.getColumnValue(1)==""){
+                    continue;
+               }
+               else{
+                    grantee_name+=grantees.getColumnValue(1)+", ";
+               }
+              }
+              as_json["grantee_name"] = grantee_name;
+
+ 
+
+              output_array.push(as_json);
+        }
+
+ 
+
+}
+multi_output_json["schema"] = output_array;
+
+ 
+
+return multi_output_json;
+$$ ;
+
+ 
+
+call parameterGenerator();
