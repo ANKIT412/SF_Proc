@@ -1,0 +1,74 @@
+CREATE OR REPLACE PROCEDURE object_details()
+returns VARIANT NOT NULL
+LANGUAGE JAVASCRIPT
+EXECUTE AS CALLER
+AS
+$$
+var obj_details_json = {};
+var output_json ={};
+var param_json = {};
+
+role_details_array=[];
+var priv_array=[];
+var w_array=[];
+var a_array=[];
+
+
+var role_sql = "SHOW ROLES;";
+var role_stmt = snowflake.createStatement({sqlText:role_sql});
+var role_result = role_stmt.execute();
+
+while(role_result.next()){
+    
+  param_json = {};
+  priv_array=[];
+  w_array=[];
+  a_array=[];
+  
+
+  var role_name = role_result.getColumnValue(2);
+  var each_role_sql = "SHOW GRANTS TO ROLE "+role_name+" ;";
+  var each_role_stmt = snowflake.createStatement({sqlText:each_role_sql});
+  each_role_stmt.execute();
+  
+  var privilege_sql = `SELECT distinct "privilege" FROM TABLE(result_scan(last_query_id()));;`
+  var privilege_stmt = snowflake.createStatement({sqlText:privilege_sql});
+  var privilege_result = privilege_stmt.execute();
+  
+  
+  while(privilege_result.next()){
+    priv_array.push(privilege_result.getColumnValue(1));
+  }
+    param_json["privilege"] = priv_array;
+    
+  var warehouse_sql = `SELECT distinct "name" FROM TABLE(result_scan(last_query_id(-2))) WHERE "granted_on" LIKE '%W_%';`;
+  var warehouse_stmt = snowflake.createStatement({sqlText:warehouse_sql});
+  var warehouse_result = warehouse_stmt.execute();
+  
+  
+  while(warehouse_result.next()){
+    w_array.push(warehouse_result.getColumnValue(1))
+  }
+    param_json["warehouse"] = w_array;
+    
+    
+  var access_sql = `SELECT distinct "name" FROM TABLE(result_scan(last_query_id(-3))) WHERE "name" LIKE 'X_%';`;
+  var access_stmt = snowflake.createStatement({sqlText:access_sql});
+  var access_result = access_stmt.execute();
+  
+  
+  while(access_result.next()){
+    a_array.push(access_result.getColumnValue(1));
+  }
+    param_json["access_role"] = a_array;
+    param_json["name"] = role_name;
+    
+    role_details_array.push(param_json);
+  }
+  output_json["role"] = role_details_array
+  
+ return output_json;
+$$;
+
+call object_details();
+
