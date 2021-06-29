@@ -1,0 +1,94 @@
+CREATE OR REPLACE PROCEDURE object_details(APP_CSI FLOAT)
+returns VARIANT NOT NULL
+LANGUAGE JAVASCRIPT
+EXECUTE AS CALLER
+AS
+$$
+var obj_details_json = {};
+var output_json ={};
+var param_json = {};
+var database_schema_grant ={};
+
+role_details_array=[];
+var priv_array=[];
+var w_array=[];
+var a_array=[];
+var database_array=[];
+var db_schema_grant_priv_array=[];
+
+
+
+var role_sql = "SHOW ROLES;";
+var role_stmt = snowflake.createStatement({sqlText:role_sql});
+var role_result = role_stmt.execute();
+
+
+
+var role_sql = `SELECT * FROM TABLE (result_scan(last_query_id())) WHERE regexp_like("name", 'R_.*_`+APP_CSI+`.*')`;
+var role_stmt = snowflake.createStatement({sqlText:role_sql});
+var role_result = role_stmt.execute();
+
+while(role_result.next()){
+    
+  param_json = {};
+  database_schema_grant={};
+  priv_array=[];
+  w_array=[];
+  a_array=[];
+  database_array=[];
+  db_schema_grant_priv_array=[]
+  
+
+  var role_name = role_result.getColumnValue(2);
+  var each_role_sql = "SHOW GRANTS TO ROLE "+role_name+" ;";
+  var each_role_stmt = snowflake.createStatement({sqlText:each_role_sql});
+  each_role_stmt.execute();
+  
+  var warehouse_sql = `SELECT distinct "name" FROM TABLE(result_scan(last_query_id())) WHERE "granted_on" LIKE '%W_%';`;
+  var warehouse_stmt = snowflake.createStatement({sqlText:warehouse_sql});
+  var warehouse_result = warehouse_stmt.execute();
+  
+  
+  while(warehouse_result.next()){
+    w_array.push(warehouse_result.getColumnValue(1))
+  }
+   param_json["warehouse"] = w_array;
+    
+    
+  var access_sql = `SELECT distinct "name" FROM TABLE(result_scan(last_query_id(-2))) WHERE "name" LIKE 'X_%';`;
+  var access_stmt = snowflake.createStatement({sqlText:access_sql});
+  var access_result = access_stmt.execute();
+  
+  
+  while(access_result.next()){
+    a_array.push(access_result.getColumnValue(1));
+  }
+    param_json["access_role"] = a_array;
+    param_json["name"] = role_name;
+    
+  var schema_sql = `SELECT "name","privilege" FROM TABLE(result_scan(last_query_id(-3))) WHERE "granted_on" = 'SCHEMA';`;
+  var schema_stmt = snowflake.createStatement({sqlText:schema_sql});
+  var schema_result = schema_stmt.execute();
+  
+  while(schema_result.next()){
+    var obj_name = schema_result.getColumnValue(1);
+    var priv = schema_result.getColumnValue(2);
+    var obj_name_arr = obj_name.split(".");
+    
+    database_schema_grant["database"] = obj_name_arr[0];
+    database_schema_grant["schema"] = obj_name_arr[1];
+    database_schema_grant["priv"] = priv;
+    priv_array.push(database_schema_grant); 
+    database_schema_grant={};
+  }
+
+    param_json["privilege_list"] = priv_array;
+
+    role_details_array.push(param_json);
+  }
+  output_json["role"] = role_details_array;
+  
+ return output_json;
+$$;
+
+call object_details(163186);
